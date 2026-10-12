@@ -1,26 +1,39 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import NewTask from '../../TaskList/NewTask'
+import { AuthContext } from '../../../context/AuthProvider'
 
 const CreateTask = () => {
+    const [userData, setUserData] = useContext(AuthContext)
     const [taskTiltle, setTaskTitle] = useState('')
     const [taskDescription, setTaskDescription] = useState('')
     const [taskDate, setTaskDate] = useState('')
     const [asignTo, setAsignTo] = useState('')
     const [category, setCategory] = useState('')
 
-    const [task, setTask] = useState({})
+    const [newTask, setNewTask] = useState({})
 
     const submitHandler = (e) => {
         e.preventDefault()
 
-        setTask({ taskTiltle, taskDescription, taskDate, category, active: false, NewTask: true, failed: true, completed: false })
-        const data = JSON.parse(localStorage.getItem('employees'))
-        data.forEach((elem)=>{
-        if(asignTo == elem.firstName){
-            console.log("xxxxxxxxxxxx");
-            
-        }            
+        setNewTask({ taskTiltle, taskDescription, taskDate, category, active: false, NewTask: true, failed: false, completed: false })
+        const data = userData
+
+        data.forEach((elem) => {
+            if (asignTo == elem.firstName) {
+                elem.tasks.push(newTask)
+                elem.taskCounts.newTask = elem.taskCounts.newTask + 1
+            }
         })
+        setUserData(data)
+        console.log(data);
+        
+
+        localStorage.setItem('employees', JSON.stringify(data))
+        setTaskTitle('')
+        setCategory('')
+        setAsignTo('')
+        setTaskDate('')
+        setTaskDescription('')
 
     }
     return (
